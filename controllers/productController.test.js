@@ -1,20 +1,22 @@
 // Author: Tan Qin Yong A0253468W
 // Includes test files for most Product Controller (under Product feature in scope)
 
-import { getProductController, getSingleProductController, productPhotoController, 
+import {
+  getProductController, getSingleProductController, productPhotoController,
   productFiltersController, productCountController, productListController,
-  searchProductController, relatedProductController, productCategoryController } from "../controllers/productController";
+  searchProductController, relatedProductController, productCategoryController
+} from "../controllers/productController";
 import productModel from "../models/productModel";
 import categoryModel from "../models/categoryModel";
 
 // Mock productModel 
 jest.mock("../models/productModel", () => ({
-    __esModule: true,
-    default: {
-        find: jest.fn(),
-        findOne: jest.fn(),
-        findById: jest.fn()
-    },
+  __esModule: true,
+  default: {
+    find: jest.fn(),
+    findOne: jest.fn(),
+    findById: jest.fn()
+  },
 }));
 
 // Mock categoryModel
@@ -23,12 +25,18 @@ jest.mock("../models/categoryModel", () => ({
   default: { findOne: jest.fn() },
 }));
 
+// Mock braintree
+jest.mock("braintree", () => ({
+  Environment: { Sandbox: "Sandbox" },
+  BraintreeGateway: jest.fn().mockImplementation(() => ({})),
+}));
+
 // Helper to create an Express-like res object
 function makeRes() {
   const res = {};
   res.status = jest.fn().mockReturnValue(res);
   res.send = jest.fn().mockReturnValue(res);
-  res.set = jest.fn().mockReturnValue(res); 
+  res.set = jest.fn().mockReturnValue(res);
   res.json = jest.fn().mockReturnValue(res);
   return res;
 }
@@ -37,7 +45,7 @@ function makeRes() {
 let consoleSpy;
 
 beforeEach(() => {
-  consoleSpy = jest.spyOn(console, "log").mockImplementation(() => {});
+  consoleSpy = jest.spyOn(console, "log").mockImplementation(() => { });
 });
 
 afterEach(() => {
@@ -97,7 +105,7 @@ describe("getProductController", () => {
     productModel.find.mockImplementation(() => {
       throw err;
     });
-    
+
     // Act
     await getProductController(req, res);
 
@@ -116,7 +124,7 @@ describe("getSingleProductController", () => {
   // Test 1 - Success case
   test("should return 200 and single product payload on success", async () => {
     // Arrange
-    const req = { params: { slug: "product-1" }};
+    const req = { params: { slug: "product-1" } };
     const res = makeRes();
 
     const fakeProduct = { _id: "p1", name: "A" };
@@ -148,7 +156,7 @@ describe("getSingleProductController", () => {
   // Test 2 - error path on model issue
   test("should return 500 and error payload when model throws", async () => {
     // Arrange
-    const req = {  params: { slug: "product-1" } };
+    const req = { params: { slug: "product-1" } };
     const res = makeRes();
 
     const err = new Error("db blew up");
@@ -156,7 +164,7 @@ describe("getSingleProductController", () => {
     productModel.findOne.mockImplementation(() => {
       throw err;
     });
-    
+
     // Act
     await getSingleProductController(req, res);
 
@@ -177,14 +185,14 @@ describe("productPhotoController", () => {
   test("should return 200 and products photo data on success", async () => {
     // Arrange
     const pid = "67a21772a6d9e00ef2ac022a";
-    const req = { params: { pid } }; 
+    const req = { params: { pid } };
     const res = makeRes();
 
-    const fakePhoto = { 
-        photo: { 
-            data: Buffer.from("fake-image-bytes"), 
-            contentType: "image/jpeg" 
-        } 
+    const fakePhoto = {
+      photo: {
+        data: Buffer.from("fake-image-bytes"),
+        contentType: "image/jpeg"
+      }
     };
 
     // findById().select() -> resolves to fakePhoto
@@ -216,7 +224,7 @@ describe("productPhotoController", () => {
     productModel.findById.mockImplementation(() => {
       throw err;
     });
-    
+
     // Act
     await productPhotoController(req, res);
 
@@ -232,25 +240,25 @@ describe("productPhotoController", () => {
 
   // Test 3 - error path when product null or no photo
   test("should return 404 when product is null", async () => {
-  // Arrange
-  const pid = "67a21772a6d9e00ef2ac022a";
-  const req = { params: { pid } };
-  const res = makeRes();
+    // Arrange
+    const pid = "67a21772a6d9e00ef2ac022a";
+    const req = { params: { pid } };
+    const res = makeRes();
 
-  // Simulate product not found
-  const selectMock = jest.fn().mockResolvedValue(null);
-  productModel.findById.mockReturnValue({ select: selectMock });
+    // Simulate product not found
+    const selectMock = jest.fn().mockResolvedValue(null);
+    productModel.findById.mockReturnValue({ select: selectMock });
 
-  // Act
-  await productPhotoController(req, res);
+    // Act
+    await productPhotoController(req, res);
 
-  // Assert
-  expect(res.status).toHaveBeenCalledWith(404);
-  expect(res.send).toHaveBeenCalledWith({
-    success: false,
-    message: "Photo not found",
+    // Assert
+    expect(res.status).toHaveBeenCalledWith(404);
+    expect(res.send).toHaveBeenCalledWith({
+      success: false,
+      message: "Photo not found",
+    });
   });
-});
 });
 
 describe("productFiltersController", () => {
@@ -336,7 +344,7 @@ describe("productFiltersController", () => {
     const err = new Error("db blew up");
     productModel.find.mockRejectedValue(err);
 
-    const logSpy = jest.spyOn(console, "log").mockImplementation(() => {});
+    const logSpy = jest.spyOn(console, "log").mockImplementation(() => { });
 
     // Act
     await productFiltersController(req, res);
@@ -346,7 +354,7 @@ describe("productFiltersController", () => {
     expect(res.send).toHaveBeenCalledWith({
       success: false,
       message: "Error while filtering products",
-      error: "db blew up", 
+      error: "db blew up",
     });
 
     logSpy.mockRestore();
@@ -395,7 +403,7 @@ describe("productCountController", () => {
     productModel.find.mockImplementation(() => {
       throw err;
     });
-    
+
     // Act
     await productCountController(req, res);
 
@@ -414,7 +422,7 @@ describe("productListController", () => {
 
   test("should return 200 and products for a given page", async () => {
     // Arrange
-    const req = { params: { page: 3 } }; 
+    const req = { params: { page: 3 } };
     const res = makeRes();
 
     const fakeProducts = [{ _id: "p1" }, { _id: "p2" }];
@@ -481,7 +489,7 @@ describe("productListController", () => {
       throw err;
     });
 
-    const logSpy = jest.spyOn(console, "log").mockImplementation(() => {});
+    const logSpy = jest.spyOn(console, "log").mockImplementation(() => { });
 
     // Act
     await productListController(req, res);
@@ -491,7 +499,7 @@ describe("productListController", () => {
     expect(res.send).toHaveBeenCalledWith({
       success: false,
       message: "error in per page ctrl",
-      error: "db blew up", 
+      error: "db blew up",
     });
 
     logSpy.mockRestore();
@@ -537,7 +545,7 @@ describe("searchProductController", () => {
       throw err;
     });
 
-    const logSpy = jest.spyOn(console, "log").mockImplementation(() => {});
+    const logSpy = jest.spyOn(console, "log").mockImplementation(() => { });
 
     // Act
     await searchProductController(req, res);
@@ -547,7 +555,7 @@ describe("searchProductController", () => {
     expect(res.send).toHaveBeenCalledWith({
       success: false,
       message: "Error In Search Product API",
-      error: "db blew up", 
+      error: "db blew up",
     });
 
     logSpy.mockRestore();
@@ -617,7 +625,7 @@ describe("relatedProductController", () => {
       throw err;
     });
 
-    const logSpy = jest.spyOn(console, "log").mockImplementation(() => {});
+    const logSpy = jest.spyOn(console, "log").mockImplementation(() => { });
 
     // Act
     await relatedProductController(req, res);
@@ -627,7 +635,7 @@ describe("relatedProductController", () => {
     expect(res.send).toHaveBeenCalledWith({
       success: false,
       message: "error while getting related product",
-      error: "db blew up", 
+      error: "db blew up",
     });
 
     logSpy.mockRestore();
@@ -696,7 +704,7 @@ describe("productCategoryController", () => {
     const err = new Error("db blew up");
     categoryModel.findOne.mockRejectedValue(err);
 
-    const logSpy = jest.spyOn(console, "log").mockImplementation(() => {});
+    const logSpy = jest.spyOn(console, "log").mockImplementation(() => { });
 
     // Act
     await productCategoryController(req, res);
@@ -705,7 +713,7 @@ describe("productCategoryController", () => {
     expect(res.status).toHaveBeenCalledWith(400);
     expect(res.send).toHaveBeenCalledWith({
       success: false,
-      error: "db blew up", 
+      error: "db blew up",
       message: "Error While Getting products",
     });
 
@@ -725,7 +733,7 @@ describe("productCategoryController", () => {
       throw err;
     });
 
-    const logSpy = jest.spyOn(console, "log").mockImplementation(() => {});
+    const logSpy = jest.spyOn(console, "log").mockImplementation(() => { });
 
     // Act
     await productCategoryController(req, res);
