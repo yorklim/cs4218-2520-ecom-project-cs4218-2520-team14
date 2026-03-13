@@ -108,7 +108,7 @@ describe("Category Controller Integration Tests", () => {
           message: "Name is required",
         }),
       );
-      expect(await categoryModel.findOne({ name: "" })).toBeNull();
+      expect(await categoryModel.find()).toHaveLength(0);
     });
 
     it("controller should send correct http requests on error duplicate category", async () => {
@@ -148,7 +148,7 @@ describe("Category Controller Integration Tests", () => {
           message: "Authentication required",
         }),
       );
-      expect(await categoryModel.findOne({ name: "TestCategory" })).toBeNull();
+      expect(await categoryModel.find()).toHaveLength(0);
     });
 
     it("controller should send correct http requests on error not admin", async () => {
@@ -164,7 +164,7 @@ describe("Category Controller Integration Tests", () => {
           message: "Admin access required",
         }),
       );
-      expect(await categoryModel.findOne({ name: "TestCategory" })).toBeNull();
+      expect(await categoryModel.find()).toHaveLength(0);
     });
 
     it("controller should send correct http requests on successful creation", async () => {
@@ -388,7 +388,7 @@ describe("Category Controller Integration Tests", () => {
       expect(deletedCategory).not.toBeNull();
       expect(deletedCategory.name).toBe("DeleteCategory");
       expect(deletedCategory.slug).toBe("deletecategory");
-      expect(await categoryModel.findById(existingCategory._id)).toBeNull();
+      expect(await categoryModel.find()).toHaveLength(0);
     });
 
     it("controller should work correctly", async () => {
@@ -414,7 +414,7 @@ describe("Category Controller Integration Tests", () => {
         }),
       );
       expect(res.send).toHaveBeenCalledTimes(1);
-      expect(await categoryModel.findById(existingCategory._id)).toBeNull();
+      expect(await categoryModel.find()).toHaveLength(0);
     });
 
     it("controller should send correct http requests on error category not found", async () => {
