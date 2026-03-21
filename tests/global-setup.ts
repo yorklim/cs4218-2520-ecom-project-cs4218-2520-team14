@@ -16,6 +16,110 @@ export default async function setup() {
 
   (global as any).__MONGOD__ = mongod;
 
+  await mongoose.connect(uri);
+
+  const [electronics, books, clothing] = await Category.create([
+    { name: "Electronics", slug: "electronics" },
+    { name: "Books", slug: "books" },
+    { name: "Clothing", slug: "clothing" },
+  ]);
+
+  await Product.create([
+    {
+      name: "iPhone 13",
+      slug: "iphone-13",
+      description: "Latest Apple iPhone with A15 Bionic chip",
+      price: 20,
+      category: electronics._id,
+      quantity: 20,
+      shipping: true,
+      photo: {
+        data: Buffer.from(""),
+        contentType: "image/jpeg",
+      },
+    },
+    {
+      name: "The Great Gatsby",
+      slug: "the-great-gatsby",
+      description: "Classic novel by F. Scott Fitzgerald",
+      price: 10,
+      category: books._id,
+      quantity: 100,
+      shipping: true,
+      photo: {
+        data: Buffer.from(""),
+        contentType: "image/jpeg",
+      },
+    },
+    {
+      name: "Laptop",
+      slug: "laptop",
+      description: "High performance laptop for work and gaming",
+      price: 30,
+      category: electronics._id,
+      quantity: 30,
+      shipping: true,
+      photo: {
+        data: Buffer.from(""),
+        contentType: "image/jpeg",
+      },
+    },
+    {
+      name: "Test Clothing 1",
+      slug: "test-clothing-1",
+      description: "Comfortable cotton t-shirt",
+      price: 30,
+      category: clothing._id,
+      quantity: 50,
+      shipping: true,
+      photo: {
+        data: Buffer.from(""),
+        contentType: "image/jpeg",
+      },
+    },
+    {
+      name: "Test Clothing 2",
+      slug: "test-clothing-2",
+      description: "Stylish denim jeans",
+      price: 200,
+      category: clothing._id,
+      quantity: 30,
+      shipping: true,
+      photo: {
+        data: Buffer.from(""),
+        contentType: "image/jpeg",
+      },
+    },
+    {
+      name: "Test Clothing 3",
+      slug: "test-clothing-3",
+      description: "Casual cotton pants",
+      price: 200,
+      category: clothing._id,
+      quantity: 40,
+      shipping: true,
+      photo: {
+        data: Buffer.from(""),
+        contentType: "image/jpeg",
+      },
+    },
+    {
+      name: "Test Clothing 4",
+      slug: "test-clothing-4",
+      description: "Formal dress shirt",
+      price: 200,
+      category: clothing._id,
+      quantity: 25,
+      shipping: true,
+      photo: {
+        data: Buffer.from(""),
+        contentType: "image/jpeg",
+      },
+    },
+  ]);
+
+  await mongoose.disconnect();
+
   const server = spawn("node", ["server.js"], {
     env: { ...process.env },
     stdio: "pipe",

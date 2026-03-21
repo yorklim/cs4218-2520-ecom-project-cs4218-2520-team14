@@ -10,24 +10,7 @@ const viewports = {
   mobile: { width: 375, height: 667 },
 };
 
-test.describe.configure({ mode: "serial" });
-
-test.beforeAll(async () => {
-  await mongoose.connect(process.env.MONGO_URL!);
-  await Category.create([
-    { name: "Electronics", slug: "electronics" },
-    { name: "Books", slug: "books" },
-    { name: "Clothing", slug: "clothing" },
-  ]);
-
-  await mongoose.disconnect();
-});
-
-test.afterAll(async () => {
-  await mongoose.connect(process.env.MONGO_URL!);
-  await Category.deleteMany({});
-  await mongoose.disconnect();
-});
+test.describe.configure({ mode: "parallel" });
 
 for (const [device, viewport] of Object.entries(viewports)) {
   test.describe(`Categories - ${device}`, () => {
