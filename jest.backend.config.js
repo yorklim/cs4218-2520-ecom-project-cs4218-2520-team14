@@ -21,7 +21,7 @@ testMatch: [
   "middlewares/**/*.js",
   "models/**/*.js",
   "!**/*.test.js",
-],g
+],
   coverageThreshold: {
     global: {
       lines: 90,
