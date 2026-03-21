@@ -50,6 +50,8 @@ describe("registerController integration tests (real DB + real helper + real mod
      SUCCESS PATH
      ========================================================= */
 
+  //Name: Shauryan Agrawal
+//Student ID: A0265846N   
   it('valid registration returns HTTP 201, success true, and message "User Register Successfully"', async () => {
     const req = makeReq();
     const res = makeRes();
@@ -69,6 +71,8 @@ describe("registerController integration tests (real DB + real helper + real mod
     );
   });
 
+  //Name: Shauryan Agrawal
+//Student ID: A0265846N
   it("response includes sanitized user object with expected fields and persisted identity", async () => {
     const req = makeReq({
       name: "Alice",
@@ -102,6 +106,8 @@ describe("registerController integration tests (real DB + real helper + real mod
     expect(String(payload.user._id)).toBe(String(dbUser._id));
   });
 
+  //Name: Shauryan Agrawal
+//Student ID: A0265846N
   it("response does not expose password at all", async () => {
     const req = makeReq({
       email: "security@test.com",
@@ -116,6 +122,8 @@ describe("registerController integration tests (real DB + real helper + real mod
     expect(payload.user.password).toBeUndefined();
   });
 
+  //Name: Shauryan Agrawal
+//Student ID: A0265846N
   it("persists the user record in the in-memory MongoDB database", async () => {
     const req = makeReq({
       name: "Persisted User",
@@ -139,6 +147,8 @@ describe("registerController integration tests (real DB + real helper + real mod
     expect(savedUser.answer).toBe("Chess");
   });
 
+  //Name: Shauryan Agrawal
+//Student ID: A0265846N
   it("stores a hashed password in the database, not the raw password", async () => {
     const req = makeReq({
       email: "hashcheck@test.com",
@@ -155,6 +165,8 @@ describe("registerController integration tests (real DB + real helper + real mod
     expect(savedUser.password).not.toBe("rawPassword123");
   });
 
+  //Name: Shauryan Agrawal
+//Student ID: A0265846N
   it("stores a bcrypt-hashed password format in the database", async () => {
     const req = makeReq({
       email: "bcryptformat@test.com",
@@ -170,6 +182,8 @@ describe("registerController integration tests (real DB + real helper + real mod
     expect(savedUser.password).toMatch(/^\$2[aby]\$\d{2}\$.{53}$/);
   });
 
+  //Name: Shauryan Agrawal
+//Student ID: A0265846N
   it("stores a password that can be verified by the real comparePassword helper", async () => {
     const req = makeReq({
       email: "helperchain@test.com",
@@ -187,6 +201,8 @@ describe("registerController integration tests (real DB + real helper + real mod
     expect(isMatch).toBe(true);
   });
 
+  //Name: Shauryan Agrawal
+//Student ID: A0265846N
   it("newly persisted user gets default role 0 from schema", async () => {
     const req = makeReq({ email: "role@test.com" });
     const res = makeRes();
@@ -199,6 +215,8 @@ describe("registerController integration tests (real DB + real helper + real mod
     expect(savedUser.role).toBe(0);
   });
 
+  //Name: Shauryan Agrawal
+//Student ID: A0265846N
   it("successful response user matches the persisted database user on key fields", async () => {
     const req = makeReq({
       name: "Match User",
@@ -228,6 +246,8 @@ describe("registerController integration tests (real DB + real helper + real mod
      DUPLICATE REGISTRATION
      ========================================================= */
 
+//Name: Shauryan Agrawal
+//Student ID: A0265846N
   it('attempting to register with an existing email returns success false and message "Already Register please login"', async () => {
     const firstReq = makeReq({ email: "duplicate@test.com" });
     const firstRes = makeRes();
@@ -249,6 +269,8 @@ describe("registerController integration tests (real DB + real helper + real mod
     });
   });
 
+  //Name: Shauryan Agrawal
+//Student ID: A0265846N
   it("duplicate registration does not create a second user record", async () => {
     const req1 = makeReq({ email: "single@test.com" });
     const res1 = makeRes();
@@ -266,6 +288,8 @@ describe("registerController integration tests (real DB + real helper + real mod
      VALIDATION BRANCHES
      ========================================================= */
 
+//Name: Shauryan Agrawal
+//Student ID: A0265846N
   it('missing required name returns validation error "Name is Required"', async () => {
     const req = makeReq({ name: "" });
     const res = makeRes();
@@ -282,6 +306,8 @@ describe("registerController integration tests (real DB + real helper + real mod
     expect(users).toHaveLength(0);
   });
 
+//Name: Shauryan Agrawal
+//Student ID: A0265846N
   it('missing required email returns validation error "Email is Required"', async () => {
     const req = makeReq({ email: "" });
     const res = makeRes();
@@ -298,6 +324,8 @@ describe("registerController integration tests (real DB + real helper + real mod
     expect(users).toHaveLength(0);
   });
 
+//Name: Shauryan Agrawal
+//Student ID: A0265846N
   it('missing required password returns validation error "Password is Required"', async () => {
     const req = makeReq({ password: "" });
     const res = makeRes();
@@ -314,6 +342,8 @@ describe("registerController integration tests (real DB + real helper + real mod
     expect(users).toHaveLength(0);
   });
 
+//Name: Shauryan Agrawal
+//Student ID: A0265846N
   it('missing required phone returns validation error "Phone no is Required"', async () => {
     const req = makeReq({ phone: "" });
     const res = makeRes();
@@ -330,6 +360,8 @@ describe("registerController integration tests (real DB + real helper + real mod
     expect(users).toHaveLength(0);
   });
 
+//Name: Shauryan Agrawal
+//Student ID: A0265846N
   it('missing required address returns validation error "Address is Required"', async () => {
     const req = makeReq({ address: "" });
     const res = makeRes();
@@ -346,6 +378,8 @@ describe("registerController integration tests (real DB + real helper + real mod
     expect(users).toHaveLength(0);
   });
 
+//Name: Shauryan Agrawal
+//Student ID: A0265846N
   it('missing required answer returns validation error "Answer is Required"', async () => {
     const req = makeReq({ answer: "" });
     const res = makeRes();
@@ -365,7 +399,8 @@ describe("registerController integration tests (real DB + real helper + real mod
   /* =========================================================
      ATOMICITY / CONSISTENCY
      ========================================================= */
-
+//Name: Shauryan Agrawal
+//Student ID: A0265846N
   it("validation failure does not persist any partial user record", async () => {
     const req = makeReq({ password: "" });
     const res = makeRes();
@@ -378,6 +413,8 @@ describe("registerController integration tests (real DB + real helper + real mod
     expect(users).toHaveLength(0);
   });
 
+//Name: Shauryan Agrawal
+//Student ID: A0265846N
   it("failed duplicate registration preserves the original persisted user data", async () => {
     const originalReq = makeReq({
       email: "preserve@test.com",

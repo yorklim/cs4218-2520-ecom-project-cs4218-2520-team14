@@ -14,8 +14,7 @@ import { comparePassword } from "../helpers/authHelper.js";
 let mongoServer;
 let app;
 
-// If your requireSignIn middleware expects "Bearer <token>",
-// change this to: `Bearer ${token}`
+
 const authHeader = (token) => token;
 
 const makeRegisterPayload = (overrides = {}) => ({
@@ -89,6 +88,8 @@ describe("Complete Authentication E2E Integration Tests (real routes + middlewar
      -> old password fails -> new password works -> persisted
      ========================================================= */
 
+     //Name: Shauryan Agrawal
+//Student ID: A0265846N
   it("completes the full normal-user authentication lifecycle end to end", async () => {
     const originalUser = makeRegisterPayload({
       name: "Alice",
@@ -251,6 +252,8 @@ describe("Complete Authentication E2E Integration Tests (real routes + middlewar
      -> new login works -> user-auth works
      ========================================================= */
 
+     //Name: Shauryan Agrawal
+//Student ID: A0265846N
   it("completes forgot-password recovery end to end", async () => {
     const user = makeRegisterPayload({
       name: "Bob",
@@ -332,7 +335,8 @@ describe("Complete Authentication E2E Integration Tests (real routes + middlewar
   /* =========================================================
      PROFILE UPDATE VALIDATION
      ========================================================= */
-
+//Name: Shauryan Agrawal
+//Student ID: A0265846N
   it("rejects profile update when authenticated user provides a password shorter than 6 characters", async () => {
     const user = makeRegisterPayload({
       name: "Carol",
@@ -390,7 +394,8 @@ describe("Complete Authentication E2E Integration Tests (real routes + middlewar
   /* =========================================================
      AUTH PROTECTION
      ========================================================= */
-
+//Name: Shauryan Agrawal
+//Student ID: A0265846N
   it("rejects unauthenticated access to protected authentication routes", async () => {
     const userAuthRes = await request(app).get("/api/v1/auth/user-auth");
     expect([401, 403]).toContain(userAuthRes.status);
@@ -424,7 +429,8 @@ describe("Complete Authentication E2E Integration Tests (real routes + middlewar
   /* =========================================================
      NORMAL USER AUTHORIZATION
      ========================================================= */
-
+//Name: Shauryan Agrawal
+//Student ID: A0265846N
   it("allows normal user access to user-auth but denies admin-only auth routes", async () => {
     const user = makeRegisterPayload({
       name: "Dave",
@@ -492,7 +498,8 @@ describe("Complete Authentication E2E Integration Tests (real routes + middlewar
      Note: role elevation is done only in setup because there is
      no public admin-registration route in the real application.
      ========================================================= */
-
+//Name: Shauryan Agrawal
+//Student ID: A0265846N
   it("allows admin user to access admin-only routes and returns sanitized user list", async () => {
     // create admin through real register route
     const adminRegisterRes = await registerUserThroughRoute(
@@ -586,7 +593,8 @@ describe("Complete Authentication E2E Integration Tests (real routes + middlewar
   /* =========================================================
      REGISTER / LOGIN / FORGOT BRANCHES AT ROUTE LEVEL
      ========================================================= */
-
+//Name: Shauryan Agrawal
+//Student ID: A0265846N
   it("prevents duplicate registration through the real register route", async () => {
     const user = makeRegisterPayload({
       name: "Duplicate User",

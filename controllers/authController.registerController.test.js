@@ -46,6 +46,8 @@ describe("registerController (detailed 100% coverage)", () => {
     logSpy.mockRestore();
   });
 
+  //Name: Shauryan Agrawal
+//Student ID: A0265846N
   it("400 when name missing and does not call findOne/hash/save", async () => {
     const req = makeReq({ name: "" });
     const res = makeRes();
@@ -63,6 +65,8 @@ describe("registerController (detailed 100% coverage)", () => {
     expect(userModel).not.toHaveBeenCalled();
   });
 
+  //Name: Shauryan Agrawal
+//Student ID: A0265846N
   it("400 when email missing and does not call findOne/hash/save", async () => {
     const req = makeReq({ email: "" });
     const res = makeRes();
@@ -80,6 +84,8 @@ describe("registerController (detailed 100% coverage)", () => {
     expect(userModel).not.toHaveBeenCalled();
   });
 
+  //Name: Shauryan Agrawal
+//Student ID: A0265846N
   it("400 when password missing", async () => {
     const req = makeReq({ password: "" });
     const res = makeRes();
@@ -97,6 +103,8 @@ describe("registerController (detailed 100% coverage)", () => {
     expect(userModel).not.toHaveBeenCalled();
   });
 
+  //Name: Shauryan Agrawal
+//Student ID: A0265846N
   it("400 when phone missing", async () => {
     const req = makeReq({ phone: "" });
     const res = makeRes();
@@ -114,6 +122,8 @@ describe("registerController (detailed 100% coverage)", () => {
     expect(userModel).not.toHaveBeenCalled();
   });
 
+  //Name: Shauryan Agrawal
+//Student ID: A0265846N
   it("400 when address missing", async () => {
     const req = makeReq({ address: "" });
     const res = makeRes();
@@ -131,6 +141,8 @@ describe("registerController (detailed 100% coverage)", () => {
     expect(userModel).not.toHaveBeenCalled();
   });
 
+  //Name: Shauryan Agrawal
+//Student ID: A0265846N
   it("400 when answer missing", async () => {
     const req = makeReq({ answer: "" });
     const res = makeRes();
@@ -148,6 +160,8 @@ describe("registerController (detailed 100% coverage)", () => {
     expect(userModel).not.toHaveBeenCalled();
   });
 
+  //Name: Shauryan Agrawal
+//Student ID: A0265846N
   it("409 when user already exists (findOne called with email, does not hash or save)", async () => {
     const req = makeReq({ email: "exists@test.com" });
     const res = makeRes();
@@ -169,6 +183,8 @@ describe("registerController (detailed 100% coverage)", () => {
     expect(userModel).not.toHaveBeenCalled();
   });
 
+  //Name: Shauryan Agrawal
+//Student ID: A0265846N
   it("201 registers new user (hashPassword + new userModel(payload).save()) and returns sanitized response", async () => {
     const req = makeReq({
       name: "Alice",
@@ -234,6 +250,8 @@ describe("registerController (detailed 100% coverage)", () => {
     });
   });
 
+  //Name: Shauryan Agrawal
+//Student ID: A0265846N
   it("500 when findOne throws (logs + returns error.message)", async () => {
     const req = makeReq({ email: "x@test.com" });
     const res = makeRes();
@@ -257,6 +275,8 @@ describe("registerController (detailed 100% coverage)", () => {
     expect(userModel).not.toHaveBeenCalled();
   });
 
+  //Name: Shauryan Agrawal
+//Student ID: A0265846N
   it("500 when hashPassword throws (logs + returns error.message, does not save)", async () => {
     const req = makeReq({ email: "new@test.com" });
     const res = makeRes();
@@ -282,6 +302,8 @@ describe("registerController (detailed 100% coverage)", () => {
     });
   });
 
+  //Name: Shauryan Agrawal
+//Student ID: A0265846N
   it("500 when save throws (logs + returns error.message)", async () => {
     const req = makeReq({ email: "new2@test.com" });
     const res = makeRes();

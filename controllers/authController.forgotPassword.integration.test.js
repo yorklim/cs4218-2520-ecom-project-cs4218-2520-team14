@@ -63,7 +63,8 @@ describe("forgotPasswordController integration tests (real DB + real helper + re
   /* =========================================================
      SUCCESS PATH
      ========================================================= */
-
+//Name: Shauryan Agrawal
+//Student ID: A0265846N
   it('valid forgot-password request returns HTTP 200 with message "Password Reset Successfully"', async () => {
     await seedUser({
       email: "reset@test.com",
@@ -88,7 +89,8 @@ describe("forgotPasswordController integration tests (real DB + real helper + re
       message: "Password Reset Successfully",
     });
   });
-
+//Name: Shauryan Agrawal
+//Student ID: A0265846N
   it("successful password reset updates the persisted password in the database", async () => {
     const { user } = await seedUser({
       email: "update@test.com",
@@ -113,7 +115,8 @@ describe("forgotPasswordController integration tests (real DB + real helper + re
     expect(afterReset.password).toBeDefined();
     expect(afterReset.password).not.toBe(beforeReset.password);
   });
-
+//Name: Shauryan Agrawal
+//Student ID: A0265846N
   it("successful password reset stores a hashed password, not the raw new password", async () => {
     await seedUser({
       email: "hashreset@test.com",
@@ -136,7 +139,8 @@ describe("forgotPasswordController integration tests (real DB + real helper + re
     expect(updatedUser.password).toBeDefined();
     expect(updatedUser.password).not.toBe("myRawNewPassword123");
   });
-
+//Name: Shauryan Agrawal
+//Student ID: A0265846N
   it("successful password reset stores a password verifiable by the real comparePassword helper", async () => {
     await seedUser({
       email: "verifyreset@test.com",
@@ -164,7 +168,8 @@ describe("forgotPasswordController integration tests (real DB + real helper + re
 
     expect(isMatch).toBe(true);
   });
-
+//Name: Shauryan Agrawal
+//Student ID: A0265846N
   it("successful password reset invalidates the old password hash semantically", async () => {
     await seedUser({
       email: "oldinvalid@test.com",
@@ -197,7 +202,8 @@ describe("forgotPasswordController integration tests (real DB + real helper + re
     expect(oldPasswordStillMatches).toBe(false);
     expect(newPasswordMatches).toBe(true);
   });
-
+//Name: Shauryan Agrawal
+//Student ID: A0265846N
   it("successful password reset preserves all non-password fields of the user", async () => {
     const { user } = await seedUser({
       name: "Preserved User",
@@ -234,7 +240,8 @@ describe("forgotPasswordController integration tests (real DB + real helper + re
   /* =========================================================
      VALIDATION BRANCHES
      ========================================================= */
-
+//Name: Shauryan Agrawal
+//Student ID: A0265846N
   it('missing email returns HTTP 400 with message "Email is required"', async () => {
     const req = makeReq({
       email: "",
@@ -254,7 +261,8 @@ describe("forgotPasswordController integration tests (real DB + real helper + re
     const users = await userModel.find({});
     expect(users).toHaveLength(0);
   });
-
+//Name: Shauryan Agrawal
+//Student ID: A0265846N
   it('missing answer returns HTTP 400 with message "answer is required"', async () => {
     const req = makeReq({
       email: "john@test.com",
@@ -274,7 +282,8 @@ describe("forgotPasswordController integration tests (real DB + real helper + re
     const users = await userModel.find({});
     expect(users).toHaveLength(0);
   });
-
+//Name: Shauryan Agrawal
+//Student ID: A0265846N
   it('missing newPassword returns HTTP 400 with message "New Password is required"', async () => {
     const req = makeReq({
       email: "john@test.com",
@@ -294,7 +303,8 @@ describe("forgotPasswordController integration tests (real DB + real helper + re
     const users = await userModel.find({});
     expect(users).toHaveLength(0);
   });
-
+//Name: Shauryan Agrawal
+//Student ID: A0265846N
   it("validation failure does not update any persisted user password", async () => {
     const { user } = await seedUser({
       email: "novalidupdate@test.com",
@@ -322,7 +332,8 @@ describe("forgotPasswordController integration tests (real DB + real helper + re
   /* =========================================================
      USER NOT FOUND / WRONG ANSWER
      ========================================================= */
-
+//Name: Shauryan Agrawal
+//Student ID: A0265846N
   it('unknown email returns HTTP 404 with message "Wrong Email Or Answer"', async () => {
     const req = makeReq({
       email: "nouser@test.com",
@@ -340,7 +351,8 @@ describe("forgotPasswordController integration tests (real DB + real helper + re
       message: "Wrong Email Or Answer",
     });
   });
-
+//Name: Shauryan Agrawal
+//Student ID: A0265846N
   it('wrong security answer returns HTTP 404 with message "Wrong Email Or Answer"', async () => {
     await seedUser({
       email: "wronganswer@test.com",
@@ -364,7 +376,8 @@ describe("forgotPasswordController integration tests (real DB + real helper + re
       message: "Wrong Email Or Answer",
     });
   });
-
+//Name: Shauryan Agrawal
+//Student ID: A0265846N
   it("wrong email or answer does not modify the original persisted password", async () => {
     const { user } = await seedUser({
       email: "nomutate@test.com",
@@ -392,7 +405,8 @@ describe("forgotPasswordController integration tests (real DB + real helper + re
   /* =========================================================
      CONSISTENCY / ATOMICITY
      ========================================================= */
-
+//Name: Shauryan Agrawal
+//Student ID: A0265846N
   it("password reset changes only one matching user record", async () => {
     await seedUser({
       name: "User One",
@@ -430,7 +444,8 @@ describe("forgotPasswordController integration tests (real DB + real helper + re
     expect(userOneMatchesNewPassword).toBe(true);
     expect(afterUserTwo.password).toBe(beforeUserTwo.password);
   });
-
+//Name: Shauryan Agrawal
+//Student ID: A0265846N
   it("successful password reset does not create or delete any user records", async () => {
     await seedUser({
       email: "countreset@test.com",

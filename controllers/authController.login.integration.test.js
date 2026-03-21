@@ -65,7 +65,8 @@ describe("loginController integration tests (real DB + real helper + real model 
   /* =========================================================
      SUCCESS PATH
      ========================================================= */
-
+//Name: Shauryan Agrawal
+//Student ID: A0265846N
   it('valid login returns HTTP 200, success true, and message "login successfully"', async () => {
     await seedUser({
       email: "success@test.com",
@@ -93,7 +94,8 @@ describe("loginController integration tests (real DB + real helper + real model 
       })
     );
   });
-
+//Name: Shauryan Agrawal
+//Student ID: A0265846N
   it("successful login returns sanitized user object with expected fields", async () => {
     const { user } = await seedUser({
       name: "Alice",
@@ -127,7 +129,8 @@ describe("loginController integration tests (real DB + real helper + real model 
     expect(payload.user.password).toBeUndefined();
     expect(payload.user.answer).toBeUndefined();
   });
-
+//Name: Shauryan Agrawal
+//Student ID: A0265846N
   it("successful login returns a JWT token that can be verified with the same secret", async () => {
     const { user } = await seedUser({
       email: "jwt@test.com",
@@ -155,7 +158,8 @@ describe("loginController integration tests (real DB + real helper + real model 
       })
     );
   });
-
+//Name: Shauryan Agrawal
+//Student ID: A0265846N
   it("successful login token payload contains the persisted user's _id", async () => {
     const { user } = await seedUser({
       email: "tokenid@test.com",
@@ -175,7 +179,8 @@ describe("loginController integration tests (real DB + real helper + real model 
 
     expect(String(decoded._id)).toBe(String(user._id));
   });
-
+//Name: Shauryan Agrawal
+//Student ID: A0265846N
   it("successful login returns database user data correctly in the response", async () => {
     await seedUser({
       name: "Match Login User",
@@ -207,7 +212,8 @@ describe("loginController integration tests (real DB + real helper + real model 
     expect(payload.user.address).toBe(dbUser.address);
     expect(payload.user.role).toBe(dbUser.role);
   });
-
+//Name: Shauryan Agrawal
+//Student ID: A0265846N
   it("successful login does not modify or overwrite the existing user record", async () => {
     await seedUser({
       name: "Immutable User",
@@ -244,7 +250,8 @@ describe("loginController integration tests (real DB + real helper + real model 
   /* =========================================================
      MISSING CREDENTIALS
      ========================================================= */
-
+//Name: Shauryan Agrawal
+//Student ID: A0265846N
   it('missing email returns HTTP 400 with message "Invalid email or password"', async () => {
     const req = makeReq({
       email: "",
@@ -261,7 +268,8 @@ describe("loginController integration tests (real DB + real helper + real model 
       message: "Invalid email or password",
     });
   });
-
+//Name: Shauryan Agrawal
+//Student ID: A0265846N
   it('missing password returns HTTP 400 with message "Invalid email or password"', async () => {
     const req = makeReq({
       email: "john@test.com",
@@ -278,7 +286,8 @@ describe("loginController integration tests (real DB + real helper + real model 
       message: "Invalid email or password",
     });
   });
-
+//Name: Shauryan Agrawal
+//Student ID: A0265846N
   it('missing both email and password returns HTTP 400 with message "Invalid email or password"', async () => {
     const req = makeReq({
       email: "",
@@ -295,7 +304,8 @@ describe("loginController integration tests (real DB + real helper + real model 
       message: "Invalid email or password",
     });
   });
-
+//Name: Shauryan Agrawal
+//Student ID: A0265846N
   it("missing credentials short-circuits before any DB login succeeds", async () => {
     await seedUser({
       email: "shortcircuit@test.com",
@@ -319,7 +329,8 @@ describe("loginController integration tests (real DB + real helper + real model 
   /* =========================================================
      USER NOT FOUND
      ========================================================= */
-
+//Name: Shauryan Agrawal
+//Student ID: A0265846N
   it('non-existent email returns HTTP 404 with message "Email is not registerd"', async () => {
     const req = makeReq({
       email: "notfound@test.com",
@@ -336,7 +347,8 @@ describe("loginController integration tests (real DB + real helper + real model 
       message: "Email is not registerd",
     });
   });
-
+//Name: Shauryan Agrawal
+//Student ID: A0265846N
   it("user-not-found login attempt does not create any user record", async () => {
     const req = makeReq({
       email: "nouser@test.com",
@@ -353,7 +365,8 @@ describe("loginController integration tests (real DB + real helper + real model 
   /* =========================================================
      WRONG PASSWORD
      ========================================================= */
-
+//Name: Shauryan Agrawal
+//Student ID: A0265846N
   it('wrong password returns HTTP 401 with message "Invalid Password"', async () => {
     await seedUser({
       email: "wrongpass@test.com",
@@ -375,7 +388,8 @@ describe("loginController integration tests (real DB + real helper + real model 
       message: "Invalid Password",
     });
   });
-
+//Name: Shauryan Agrawal
+//Student ID: A0265846N
   it("wrong password does not return a token", async () => {
     await seedUser({
       email: "notoken@test.com",
@@ -394,7 +408,8 @@ describe("loginController integration tests (real DB + real helper + real model 
 
     expect(payload.token).toBeUndefined();
   });
-
+//Name: Shauryan Agrawal
+//Student ID: A0265846N
   it("wrong password does not mutate the persisted user record", async () => {
     await seedUser({
       name: "Protected User",
@@ -431,7 +446,8 @@ describe("loginController integration tests (real DB + real helper + real model 
   /* =========================================================
      RESPONSE SECURITY / CONSISTENCY
      ========================================================= */
-
+//Name: Shauryan Agrawal
+//Student ID: A0265846N
   it("successful login response never exposes password", async () => {
     await seedUser({
       email: "securelogin@test.com",
@@ -450,7 +466,8 @@ describe("loginController integration tests (real DB + real helper + real model 
 
     expect(payload.user.password).toBeUndefined();
   });
-
+//Name: Shauryan Agrawal
+//Student ID: A0265846N
   it("successful login response never exposes security answer", async () => {
     await seedUser({
       email: "noanswer@test.com",
@@ -474,7 +491,8 @@ describe("loginController integration tests (real DB + real helper + real model 
   /* =========================================================
      TOKEN STRUCTURE / AUTH CHAIN
      ========================================================= */
-
+//Name: Shauryan Agrawal
+//Student ID: A0265846N
   it('successful login generates a token whose payload matches the authenticated user and uses 7d expiry semantics', async () => {
     const { user } = await seedUser({
       email: "expiry@test.com",
