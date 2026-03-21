@@ -13,6 +13,7 @@ export default async function setup() {
   process.env.PORT = "6060";
   process.env.DEV_MODE = "test";
   process.env.REACT_APP_MODE = "test";
+  process.env.JWT_SECRET = "playwright-test-secret";
 
   (global as any).__MONGOD__ = mongod;
 

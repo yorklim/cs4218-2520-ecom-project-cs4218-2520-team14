@@ -1,8 +1,13 @@
-import mongoose from "mongoose";
 import { MongoMemoryServer } from "mongodb-memory-server";
 
 export default async function teardown() {
-  await mongoose.disconnect();
+  const server = (global as any).__SERVER__;
+  if (server) {
+    server.kill();
+  }
+
   const mongod: MongoMemoryServer = (global as any).__MONGOD__;
-  if (mongod) await mongod.stop();
+  if (mongod) {
+    await mongod.stop();
+  }
 }

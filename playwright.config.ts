@@ -20,8 +20,8 @@ export default defineConfig({
     actionTimeout: 0,
     baseURL: "http://localhost:3000",
     trace: "on-first-retry",
-    video: "on",
-    screenshot: "on",
+    video: "retain-on-failure",
+    screenshot: "only-on-failure",
   },
   projects: [
     {
