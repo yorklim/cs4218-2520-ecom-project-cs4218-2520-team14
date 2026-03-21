@@ -59,9 +59,6 @@ for (const [device, viewport] of Object.entries(viewports)) {
   test.describe(`Cart Page - ${device}`, () => {
     test.beforeEach(async ({ page }) => {
       await page.setViewportSize(viewport);
-      await page.evaluate(() => {
-        localStorage.clear();
-      });
       await page.goto("/cart");
     });
 
