@@ -2,6 +2,9 @@ import { MongoMemoryServer } from "mongodb-memory-server";
 import mongoose from "mongoose";
 import Category from "../models/categoryModel.js";
 import Product from "../models/productModel.js";
+import Order from "../models/orderModel.js";
+import User from "../models/userModel.js";
+import { hashPassword } from "../helpers/authHelper.js";
 import { spawn } from "child_process";
 
 export default async function setup() {
@@ -116,6 +119,58 @@ export default async function setup() {
         data: Buffer.from(""),
         contentType: "image/jpeg",
       },
+    },
+  ]);
+
+  const seededUserId = new mongoose.Types.ObjectId("69bbffabbb744c5c6268221e");
+  const seededAdminId = new mongoose.Types.ObjectId("69bbffabbb744c5c6268221f");
+
+  const userPassword = await hashPassword("password123");
+  const adminPassword = await hashPassword("admin123");
+
+  const normalUser = await User.create({
+    _id: "69bbffabbb744c5c6268221e",
+    name: "Mina Sue",
+    email: "mina.sue@netflix.com",
+    password: userPassword,
+    phone: "123456789",
+    address: "Singles Inferno",
+    answer: "blue",
+    role: 0,
+  });
+
+  await User.create({
+    _id: seededAdminId,
+    name: "Admin User",
+    email: "admin@test.com",
+    password: adminPassword,
+    phone: "99999999",
+    address: "SG",
+    answer: "red",
+    role: 1,
+  });
+
+  const clothing1 = await Product.findOne({ slug: "test-clothing-1" });
+  const clothing2 = await Product.findOne({ slug: "test-clothing-2" });
+  const laptop = await Product.findOne({ slug: "laptop" });
+
+  if (!clothing1 || !clothing2 || !laptop) {
+    throw new Error("Seeded products not found");
+  }
+
+  // Seed orders for the normal user
+  await Order.create([
+    {
+      products: [clothing1._id, clothing2._id],
+      payment: { success: true },
+      buyer: normalUser._id,
+      status: "Processing",
+    },
+    {
+      products: [laptop._id],
+      payment: { success: false },
+      buyer: normalUser._id,
+      status: "Delivered",
     },
   ]);
 
