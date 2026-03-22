@@ -135,11 +135,7 @@ test.describe("Product Update", () => {
 
     const originalProductResponse = await originalProductPromise;
     const originalProductData = await originalProductResponse.json();
-    const originalProduct = originalProductData.products;
-    const originalCategoryId =
-      typeof originalProduct.category === "string"
-        ? originalProduct.category
-        : originalProduct.category?._id;
+    const originalProduct = originalProductData.product;
 
     const productPromise = page.waitForResponse(
       (response) =>
@@ -168,7 +164,7 @@ test.describe("Product Update", () => {
           name: originalProduct.name,
           description: originalProduct.description,
           price: String(originalProduct.price),
-          category: String(originalCategoryId),
+          category: String(originalProduct.category._id),
           quantity: String(originalProduct.quantity),
           shipping: String(originalProduct.shipping ? 1 : 0),
         },
