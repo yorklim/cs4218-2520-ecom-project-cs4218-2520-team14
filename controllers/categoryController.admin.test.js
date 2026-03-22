@@ -19,7 +19,7 @@ describe("Category Controller", () => {
     jest.clearAllMocks();
   });
 
-  describe("(New)", () => {
+  describe("(Create)", () => {
     it("should error when creating a category without a name", async () => {
       const req = { body: {} };
 
@@ -28,7 +28,10 @@ describe("Category Controller", () => {
       expect(res.status).toHaveBeenCalledWith(401);
       expect(res.status).toHaveBeenCalledTimes(1);
       expect(res.send).toHaveBeenCalledWith(
-        expect.objectContaining({ message: "Name is required" }),
+        expect.objectContaining({
+          success: false,
+          message: "Name is required",
+        }),
       );
       expect(res.send).toHaveBeenCalledTimes(1);
     });
@@ -108,6 +111,34 @@ describe("Category Controller", () => {
         expect.objectContaining({
           success: false,
           message: "Category not found",
+        }),
+      );
+      expect(res.send).toHaveBeenCalledTimes(1);
+    });
+
+    it("should error when updating a category without a name", async () => {
+      const req = {
+        body: { name: "" },
+        params: { id: "existingid" },
+      };
+      const category = { name: "ExistingCategory", slug: "existingcategory" };
+      jest
+        .spyOn(categoryModel, "findByIdAndUpdate")
+        .mockResolvedValue(category);
+
+      const res = {
+        status: jest.fn().mockReturnThis(),
+        send: jest.fn(),
+      };
+
+      await updateCategoryController(req, res);
+
+      expect(res.status).toHaveBeenCalledWith(401);
+      expect(res.status).toHaveBeenCalledTimes(1);
+      expect(res.send).toHaveBeenCalledWith(
+        expect.objectContaining({
+          success: false,
+          message: "Name is required",
         }),
       );
       expect(res.send).toHaveBeenCalledTimes(1);

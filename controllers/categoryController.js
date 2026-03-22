@@ -4,7 +4,9 @@ export const createCategoryController = async (req, res) => {
   try {
     const { name } = req.body;
     if (!name) {
-      return res.status(401).send({ message: "Name is required" });
+      return res
+        .status(401)
+        .send({ success: false, message: "Name is required" });
     }
     const existingCategory = await categoryModel.findOne({ name });
     if (existingCategory) {
@@ -37,6 +39,12 @@ export const updateCategoryController = async (req, res) => {
   try {
     const { name } = req.body;
     const { id } = req.params;
+
+    if (!name) {
+      return res
+        .status(401)
+        .send({ success: false, message: "Name is required" });
+    }
     const category = await categoryModel.findByIdAndUpdate(
       id,
       { name, slug: slugify(name) },
@@ -89,7 +97,7 @@ export const singleCategoryController = async (req, res) => {
     if (!category) {
       return res.status(404).send({
         success: false,
-        message: "Category not found"
+        message: "Category not found",
       });
     }
     res.status(200).send({
