@@ -1,7 +1,7 @@
 import { Select } from "antd";
 import axios from "axios";
 import moment from "moment";
-import { useEffect, useState } from "react";
+import React, { useEffect, useState } from "react";
 import toast from "react-hot-toast";
 import AdminMenu from "../../components/AdminMenu";
 import Layout from "../../components/Layout";
