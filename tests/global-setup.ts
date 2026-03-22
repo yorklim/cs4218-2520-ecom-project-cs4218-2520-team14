@@ -23,7 +23,11 @@ export default async function setup() {
   await mongoose.connect(uri);
 
   const [electronics, books, clothing] = await Category.create([
-    { name: "Electronics", slug: "electronics" },
+    {
+      name: "Electronics",
+      slug: "electronics",
+      _id: "69bff6d702dde54f12009ef3",
+    },
     { name: "Books", slug: "books" },
     { name: "Clothing", slug: "clothing" },
   ]);

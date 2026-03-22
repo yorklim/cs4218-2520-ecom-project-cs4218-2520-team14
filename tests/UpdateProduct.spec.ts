@@ -20,6 +20,7 @@ const authData = {
 };
 
 const seededProductSlug = "iphone-13";
+const electronicsCategoryId = "69bff6d702dde54f12009ef3";
 
 test.beforeEach(async ({ page }) => {
   await page.goto(`/dashboard/admin/product/${seededProductSlug}`);
@@ -219,25 +220,12 @@ test.describe("Product Deletion", () => {
     request,
   }) => {
     // Arrange - create a product to delete
-    const originalProductPromise = page.waitForResponse(
-      (response) =>
-        response
-          .url()
-          .includes(`/api/v1/product/get-product/${seededProductSlug}`) &&
-        response.request().method() === "GET",
-    );
-    await page.reload();
-
-    const originalProductResponse = await originalProductPromise;
-    const originalProductData = await originalProductResponse.json();
-    const originalCategoryId = originalProductData.product.category._id;
-
     const response = await request.post("/api/v1/product/create-product", {
       multipart: {
         name: "Product to Delete",
         description: "This product will be deleted in the test",
         price: 10,
-        category: originalCategoryId,
+        category: electronicsCategoryId,
         quantity: 10,
         shipping: true,
       },
