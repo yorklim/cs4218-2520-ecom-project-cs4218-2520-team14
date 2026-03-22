@@ -6,7 +6,8 @@ import Category from "../models/categoryModel.js";
 import Product from "../models/productModel.js";
 
 jest.mock("../config/db.js", () => jest.fn());
-import app, { server } from "../server.js";
+import { server } from "../server.js";
+import app from "./app.js";
 
 function binaryParser(res, callback) {
     res.setEncoding("binary");
@@ -717,6 +718,370 @@ describe("productListController", () => {
       success: false,
       message: "error in per page ctrl",
       error: "db blew up",
+    });
+  });
+});
+
+describe("searchProductController", () => {
+  test("should return matching products by keyword in name", async () => {
+    const books = await createCategory("Books", "books");
+
+    await createProduct({
+      name: "JavaScript Guide",
+      slug: "javascript-guide",
+      description: "Learn coding fast",
+      price: 30,
+      category: books._id,
+    });
+
+    await createProduct({
+      name: "Cooking Basics",
+      slug: "cooking-basics",
+      description: "Kitchen starter guide",
+      price: 20,
+      category: books._id,
+    });
+
+    const res = await request(app).get("/api/v1/product/search/javascript");
+
+    expect(res.status).toBe(200);
+    expect(Array.isArray(res.body)).toBe(true);
+    expect(res.body).toHaveLength(1);
+    expect(res.body[0].name).toBe("JavaScript Guide");
+    expect(res.body[0].slug).toBe("javascript-guide");
+    expect(res.body[0].photo).toBeUndefined();
+  });
+
+  test("should return matching products by keyword in description", async () => {
+    const books = await createCategory("Books", "books");
+
+    await createProduct({
+      name: "Book One",
+      slug: "book-one",
+      description: "This teaches React very clearly",
+      price: 40,
+      category: books._id,
+    });
+
+    await createProduct({
+      name: "Book Two",
+      slug: "book-two",
+      description: "History and literature",
+      price: 25,
+      category: books._id,
+    });
+
+    const res = await request(app).get("/api/v1/product/search/react");
+
+    expect(res.status).toBe(200);
+    expect(Array.isArray(res.body)).toBe(true);
+    expect(res.body).toHaveLength(1);
+    expect(res.body[0].slug).toBe("book-one");
+    expect(res.body[0].photo).toBeUndefined();
+  });
+
+  test("should be case-insensitive", async () => {
+    const books = await createCategory("Books", "books");
+
+    await createProduct({
+      name: "Node Handbook",
+      slug: "node-handbook",
+      description: "Backend concepts",
+      price: 35,
+      category: books._id,
+    });
+
+    const res = await request(app).get("/api/v1/product/search/NODE");
+
+    expect(res.status).toBe(200);
+    expect(Array.isArray(res.body)).toBe(true);
+    expect(res.body).toHaveLength(1);
+    expect(res.body[0].slug).toBe("node-handbook");
+  });
+
+  test("should return empty array when no products match", async () => {
+    const books = await createCategory("Books", "books");
+
+    await createProduct({
+      name: "Node Handbook",
+      slug: "node-handbook",
+      description: "Backend concepts",
+      price: 35,
+      category: books._id,
+    });
+
+    const res = await request(app).get("/api/v1/product/search/doesnotmatch");
+
+    expect(res.status).toBe(200);
+    expect(Array.isArray(res.body)).toBe(true);
+    expect(res.body).toHaveLength(0);
+  });
+
+  test("should return 400 with success false when search query fails", async () => {
+    jest.spyOn(Product, "find").mockImplementation(() => {
+      throw new Error("db blew up");
+    });
+
+    const res = await request(app).get("/api/v1/product/search/test");
+
+    expect(res.status).toBe(400);
+    expect(res.body).toEqual({
+      success: false,
+      message: "Error In Search Product API",
+      error: "db blew up",
+    });
+  });
+});
+
+describe("relatedProductController", () => {
+  test("should return 200 with related products in the same category excluding the current product", async () => {
+    const books = await createCategory("Books", "books");
+    const electronics = await createCategory("Electronics", "electronics");
+
+    const current = await createProduct({
+      name: "Current Book",
+      slug: "current-book",
+      description: "Current book",
+      price: 20,
+      category: books._id,
+    });
+
+    const related1 = await createProduct({
+      name: "Related Book 1",
+      slug: "related-book-1",
+      description: "Related 1",
+      price: 25,
+      category: books._id,
+    });
+
+    const related2 = await createProduct({
+      name: "Related Book 2",
+      slug: "related-book-2",
+      description: "Related 2",
+      price: 30,
+      category: books._id,
+    });
+
+    await createProduct({
+      name: "Laptop",
+      slug: "laptop",
+      description: "Different category",
+      price: 1000,
+      category: electronics._id,
+    });
+
+    const res = await request(app).get(
+      `/api/v1/product/related-product/${current._id}/${books._id}`
+    );
+
+    expect(res.status).toBe(200);
+    expect(res.body.success).toBe(true);
+    expect(res.body).toHaveProperty("success");
+    expect(res.body).toHaveProperty("products");
+    expect(Array.isArray(res.body.products)).toBe(true);
+    expect(res.body.products).toHaveLength(2);
+
+    const returnedIds = res.body.products.map((p) => p._id.toString());
+    expect(returnedIds).toEqual(
+      expect.arrayContaining([related1._id.toString(), related2._id.toString()])
+    );
+    expect(returnedIds).not.toContain(current._id.toString());
+
+    for (const product of res.body.products) {
+      expect(product.photo).toBeUndefined();
+      expect(product.category).toBeTruthy();
+      expect(typeof product.category).toBe("object");
+      expect(product.category).toHaveProperty("_id");
+      expect(product.category).toHaveProperty("name");
+      expect(product.category).toHaveProperty("slug");
+      expect(product.category._id.toString()).toBe(books._id.toString());
+    }
+  });
+
+  test("should limit related products to 3", async () => {
+    const books = await createCategory("Books", "books");
+
+    const current = await createProduct({
+      name: "Current Book",
+      slug: "current-book",
+      description: "Current book",
+      price: 20,
+      category: books._id,
+    });
+
+    for (let i = 1; i <= 5; i++) {
+      await createProduct({
+        name: `Related Book ${i}`,
+        slug: `related-book-${i}`,
+        description: `Related ${i}`,
+        price: 20 + i,
+        category: books._id,
+      });
+    }
+
+    const res = await request(app).get(
+      `/api/v1/product/related-product/${current._id}/${books._id}`
+    );
+
+    expect(res.status).toBe(200);
+    expect(res.body.success).toBe(true);
+    expect(Array.isArray(res.body.products)).toBe(true);
+    expect(res.body.products.length).toBeLessThanOrEqual(3);
+    expect(res.body.products).toHaveLength(3);
+  });
+
+  test("should return empty array when no related products exist", async () => {
+    const books = await createCategory("Books", "books");
+
+    const current = await createProduct({
+      name: "Only Book",
+      slug: "only-book",
+      description: "No related products",
+      price: 20,
+      category: books._id,
+    });
+
+    const res = await request(app).get(
+      `/api/v1/product/related-product/${current._id}/${books._id}`
+    );
+
+    expect(res.status).toBe(200);
+    expect(res.body.success).toBe(true);
+    expect(Array.isArray(res.body.products)).toBe(true);
+    expect(res.body.products).toHaveLength(0);
+  });
+
+  test("should return 400 with success false when related product query fails", async () => {
+    jest.spyOn(Product, "find").mockImplementation(() => {
+      throw new Error("db blew up");
+    });
+
+    const somePid = new mongoose.Types.ObjectId();
+    const someCid = new mongoose.Types.ObjectId();
+
+    const res = await request(app).get(
+      `/api/v1/product/related-product/${somePid}/${someCid}`
+    );
+
+    expect(res.status).toBe(400);
+    expect(res.body).toEqual({
+      success: false,
+      message: "error while getting related product",
+      error: "db blew up",
+    });
+  });
+});
+
+describe("productCategoryController", () => {
+  test("should return 200 with category and products for a valid category slug", async () => {
+    const books = await createCategory("Books", "books");
+    const electronics = await createCategory("Electronics", "electronics");
+
+    const book1 = await createProduct({
+      name: "Book 1",
+      slug: "book-1",
+      description: "Book 1 desc",
+      price: 20,
+      category: books._id,
+    });
+
+    const book2 = await createProduct({
+      name: "Book 2",
+      slug: "book-2",
+      description: "Book 2 desc",
+      price: 30,
+      category: books._id,
+    });
+
+    await createProduct({
+      name: "Laptop 1",
+      slug: "laptop-1",
+      description: "Laptop desc",
+      price: 1000,
+      category: electronics._id,
+    });
+
+    const res = await request(app).get("/api/v1/product/product-category/books");
+
+    expect(res.status).toBe(200);
+    expect(res.body.success).toBe(true);
+
+    expect(res.body).toHaveProperty("success");
+    expect(res.body).toHaveProperty("category");
+    expect(res.body).toHaveProperty("products");
+
+    expect(res.body.category).toBeTruthy();
+    expect(res.body.category.slug).toBe("books");
+    expect(res.body.category.name).toBe("Books");
+
+    expect(Array.isArray(res.body.products)).toBe(true);
+    expect(res.body.products).toHaveLength(2);
+
+    const returnedIds = res.body.products.map((p) => p._id.toString());
+    expect(returnedIds).toEqual(
+      expect.arrayContaining([book1._id.toString(), book2._id.toString()])
+    );
+
+    for (const product of res.body.products) {
+      expect(product.category).toBeTruthy();
+      expect(typeof product.category).toBe("object");
+      expect(product.category).toHaveProperty("_id");
+      expect(product.category).toHaveProperty("name", "Books");
+      expect(product.category).toHaveProperty("slug", "books");
+    }
+  });
+
+  test("should return 404 when category slug does not exist", async () => {
+    const res = await request(app).get(
+      "/api/v1/product/product-category/does-not-exist"
+    );
+
+    expect(res.status).toBe(404);
+    expect(res.body).toEqual({
+      success: false,
+      message: "Category not found",
+    });
+  });
+
+  test("should return 200 with empty products array when category exists but has no products", async () => {
+    await createCategory("Books", "books");
+
+    const res = await request(app).get("/api/v1/product/product-category/books");
+
+    expect(res.status).toBe(200);
+    expect(res.body.success).toBe(true);
+    expect(res.body.category.slug).toBe("books");
+    expect(Array.isArray(res.body.products)).toBe(true);
+    expect(res.body.products).toHaveLength(0);
+  });
+
+  test("should return 400 with success false when category lookup fails", async () => {
+    jest.spyOn(Category, "findOne").mockRejectedValue(new Error("db blew up"));
+
+    const res = await request(app).get("/api/v1/product/product-category/books");
+
+    expect(res.status).toBe(400);
+    expect(res.body).toEqual({
+      success: false,
+      error: "db blew up",
+      message: "Error While Getting products",
+    });
+  });
+
+  test("should return 400 with success false when product lookup fails after category is found", async () => {
+    const books = await createCategory("Books", "books");
+
+    jest.spyOn(Product, "find").mockImplementation(() => {
+      throw new Error("db blew up");
+    });
+
+    const res = await request(app).get(`/api/v1/product/product-category/${books.slug}`);
+
+    expect(res.status).toBe(400);
+    expect(res.body).toEqual({
+      success: false,
+      error: "db blew up",
+      message: "Error While Getting products",
     });
   });
 });
