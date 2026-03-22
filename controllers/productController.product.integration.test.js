@@ -7,7 +7,7 @@ import Product from "../models/productModel.js";
 
 jest.mock("../config/db.js", () => jest.fn());
 import { server } from "../server.js";
-import app from "./app.js";
+import app from "../app.js";
 
 function binaryParser(res, callback) {
     res.setEncoding("binary");
