@@ -4,7 +4,9 @@ import mongoose from "mongoose";
 import { hashPassword } from "../helpers/authHelper.js";
 import Category from "../models/categoryModel.js";
 import Product from "../models/productModel.js";
+import Order from "../models/orderModel.js";
 import User from "../models/userModel.js";
+import { hashPassword } from "../helpers/authHelper.js";
 
 export default async function setup() {
   // 1. Start memory DB
@@ -167,6 +169,30 @@ export default async function setup() {
     answer: "red",
     role: 1,
   });
+
+  const clothing1 = await Product.findOne({ slug: "test-clothing-1" });
+  const clothing2 = await Product.findOne({ slug: "test-clothing-2" });
+  const laptop = await Product.findOne({ slug: "laptop" });
+
+  if (!clothing1 || !clothing2 || !laptop) {
+    throw new Error("Seeded products not found");
+  }
+
+  // Seed orders for the order test
+  await Order.create([
+    {
+      products: [clothing1._id, clothing2._id],
+      payment: { success: true },
+      buyer: "69bbffabbb744c5c6268221e",
+      status: "Processing",
+    },
+    {
+      products: [laptop._id],
+      payment: { success: false },
+      buyer: "69bbffabbb744c5c6268221e",
+      status: "Delivered",
+    },
+  ]);
 
   await mongoose.disconnect();
 
