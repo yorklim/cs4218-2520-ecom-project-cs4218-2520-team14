@@ -1,6 +1,6 @@
 import { Select } from "antd";
 import axios from "axios";
-import { useEffect, useState } from "react";
+import React, { useEffect, useState } from "react";
 import toast from "react-hot-toast";
 import { useNavigate } from "react-router-dom";
 import AdminMenu from "./../../components/AdminMenu";
