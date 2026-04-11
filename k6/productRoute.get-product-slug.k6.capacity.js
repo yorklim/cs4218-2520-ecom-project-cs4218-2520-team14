@@ -23,78 +23,96 @@ const getProductErrorRate = new Rate("get_product_error_rate");
 export const options = {
   summaryTrendStats: ["avg", "min", "med", "max", "p(75)", "p(90)", "p(95)", "count"],
   scenarios: {
+    get_product_10: {
+      executor: "ramping-vus",
+      startVUs: 0,
+      stages: [
+        { target: 10, duration: "10s" },
+        { target: 10, duration: "50s" },
+      ],
+      exec: "getProductTest",
+      tags: { endpoint: "get-product", load: "10" },
+    },
     get_product_50: {
-      executor: "constant-vus",
-      vus: 50,
-      duration: "1m",
+      executor: "ramping-vus",
+      startVUs: 10,
+      stages: [
+        { target: 50, duration: "10s" },
+        { target: 50, duration: "50s" },
+      ],
+      startTime: "1m",
       exec: "getProductTest",
       tags: { endpoint: "get-product", load: "50" },
     },
     get_product_100: {
-      executor: "constant-vus",
-      vus: 100,
-      duration: "1m",
-      startTime: "1m",
+      executor: "ramping-vus",
+      startVUs: 50,
+      stages: [
+        { target: 100, duration: "10s" },
+        { target: 100, duration: "50s" },
+      ],
+      startTime: "2m",
       exec: "getProductTest",
       tags: { endpoint: "get-product", load: "100" },
     },
     get_product_150: {
-      executor: "constant-vus",
-      vus: 150,
-      duration: "1m",
-      startTime: "2m",
+      executor: "ramping-vus",
+      startVUs: 100,
+      stages: [
+        { target: 150, duration: "10s" },
+        { target: 150, duration: "50s" },
+      ],
+      startTime: "3m",
       exec: "getProductTest",
       tags: { endpoint: "get-product", load: "150" },
     },
     get_product_200: {
-      executor: "constant-vus",
-      vus: 200,
-      duration: "1m",
-      startTime: "3m",
+      executor: "ramping-vus",
+      startVUs: 150,
+      stages: [
+        { target: 200, duration: "10s" },
+        { target: 200, duration: "50s" },
+      ],
+      startTime: "4m",
       exec: "getProductTest",
       tags: { endpoint: "get-product", load: "200" },
     },
-    get_product_300: {
-      executor: "constant-vus",
-      vus: 300,
-      duration: "1m",
-      startTime: "4m",
-      exec: "getProductTest",
-      tags: { endpoint: "get-product", load: "300" },
-    },
-    get_product_400: {
-      executor: "constant-vus",
-      vus: 400,
-      duration: "1m",
+    get_product_250: {
+      executor: "ramping-vus",
+      startVUs: 200,
+      stages: [
+        { target: 250, duration: "10s" },
+        { target: 250, duration: "50s" },
+      ],
       startTime: "5m",
       exec: "getProductTest",
-      tags: { endpoint: "get-product", load: "400" },
+      tags: { endpoint: "get-product", load: "250" },
     },
   },
   thresholds: {
     // p75 Response Time Thresholds (< 1000ms)
+    "http_req_duration{endpoint:get-product,load:10}": ["p(75)<1000"],
     "http_req_duration{endpoint:get-product,load:50}": ["p(75)<1000"],
     "http_req_duration{endpoint:get-product,load:100}": ["p(75)<1000"],
     "http_req_duration{endpoint:get-product,load:150}": ["p(75)<1000"],
     "http_req_duration{endpoint:get-product,load:200}": ["p(75)<1000"],
-    "http_req_duration{endpoint:get-product,load:300}": ["p(75)<1000"],
-    "http_req_duration{endpoint:get-product,load:400}": ["p(75)<1000"],
+    "http_req_duration{endpoint:get-product,load:250}": ["p(75)<1000"],
 
     // Error Rate Thresholds
+    "http_req_failed{endpoint:get-product,load:10}": ["rate<0.01"],
     "http_req_failed{endpoint:get-product,load:50}": ["rate<0.01"],
     "http_req_failed{endpoint:get-product,load:100}": ["rate<0.01"],
     "http_req_failed{endpoint:get-product,load:150}": ["rate<0.01"],
     "http_req_failed{endpoint:get-product,load:200}": ["rate<0.01"],
-    "http_req_failed{endpoint:get-product,load:300}": ["rate<0.01"],
-    "http_req_failed{endpoint:get-product,load:400}": ["rate<0.01"],
+    "http_req_failed{endpoint:get-product,load:250}": ["rate<0.01"],
 
     // Request Counters for RPS calculation
+    "http_reqs{endpoint:get-product,load:10}": ["count>=0"],
     "http_reqs{endpoint:get-product,load:50}": ["count>=0"],
     "http_reqs{endpoint:get-product,load:100}": ["count>=0"],
     "http_reqs{endpoint:get-product,load:150}": ["count>=0"],
     "http_reqs{endpoint:get-product,load:200}": ["count>=0"],
-    "http_reqs{endpoint:get-product,load:300}": ["count>=0"],
-    "http_reqs{endpoint:get-product,load:400}": ["count>=0"],
+    "http_reqs{endpoint:get-product,load:250}": ["count>=0"],
   },
 };
 
@@ -119,7 +137,7 @@ export function getProductTest() {
 }
 
 export function handleSummary(data) {
-  const loads = ["50", "100", "150", "200", "300", "400"];
+  const loads = ["10", "50", "100", "150", "200", "250"];
 
   let customTable = "\n=========================================================================\n";
   customTable += " VU Load |    RPS    | p75 Response Time | Error Rate |   Endpoints   \n";

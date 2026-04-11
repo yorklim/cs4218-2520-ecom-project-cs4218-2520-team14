@@ -26,64 +26,93 @@ export const options = {
   summaryTrendStats: ["avg", "min", "med", "max", "p(75)", "p(90)", "p(95)", "count"],
   scenarios: {
     payment_10: {
-      executor: "constant-vus",
-      vus: 10,
-      duration: "1m",
+      executor: "ramping-vus",
+      startVUs: 0,
+      stages: [
+        { target: 10, duration: "10s" },
+        { target: 10, duration: "50s" },
+      ],
       exec: "paymentTest",
       tags: { endpoint: "braintree-payment", load: "10" },
     },
     payment_50: {
-      executor: "constant-vus",
-      vus: 50,
-      duration: "1m",
+      executor: "ramping-vus",
+      startVUs: 10,
+      stages: [
+        { target: 50, duration: "10s" },
+        { target: 50, duration: "50s" },
+      ],
       startTime: "1m",
       exec: "paymentTest",
       tags: { endpoint: "braintree-payment", load: "50" },
     },
     payment_100: {
-      executor: "constant-vus",
-      vus: 100,
-      duration: "1m",
+      executor: "ramping-vus",
+      startVUs: 50,
+      stages: [
+        { target: 100, duration: "10s" },
+        { target: 100, duration: "50s" },
+      ],
       startTime: "2m",
       exec: "paymentTest",
       tags: { endpoint: "braintree-payment", load: "100" },
     },
     payment_150: {
-      executor: "constant-vus",
-      vus: 150,
-      duration: "1m",
+      executor: "ramping-vus",
+      startVUs: 100,
+      stages: [
+        { target: 150, duration: "10s" },
+        { target: 150, duration: "50s" },
+      ],
       startTime: "3m",
       exec: "paymentTest",
       tags: { endpoint: "braintree-payment", load: "150" },
     },
     payment_200: {
-      executor: "constant-vus",
-      vus: 200,
-      duration: "1m",
+      executor: "ramping-vus",
+      startVUs: 150,
+      stages: [
+        { target: 200, duration: "10s" },
+        { target: 200, duration: "50s" },
+      ],
       startTime: "4m",
       exec: "paymentTest",
       tags: { endpoint: "braintree-payment", load: "200" },
     },
+    payment_250: {
+      executor: "ramping-vus",
+      startVUs: 200,
+      stages: [
+        { target: 250, duration: "10s" },
+        { target: 250, duration: "50s" },
+      ],
+      startTime: "5m",
+      exec: "paymentTest",
+      tags: { endpoint: "braintree-payment", load: "250" },
+    },
   },
   thresholds: {
-    // p75 Response Time Thresholds (< 1500ms)
-    "http_req_duration{endpoint:braintree-payment,load:10}": ["p(75)<1500"],
-    "http_req_duration{endpoint:braintree-payment,load:50}": ["p(75)<1500"],
-    "http_req_duration{endpoint:braintree-payment,load:100}": ["p(75)<1500"],
-    "http_req_duration{endpoint:braintree-payment,load:150}": ["p(75)<1500"],
-    "http_req_duration{endpoint:braintree-payment,load:200}": ["p(75)<1500"],
+    // p75 Response Time Thresholds (< 750ms)
+    "http_req_duration{endpoint:braintree-payment,load:10}": ["p(75)<750"],
+    "http_req_duration{endpoint:braintree-payment,load:50}": ["p(75)<750"],
+    "http_req_duration{endpoint:braintree-payment,load:100}": ["p(75)<750"],
+    "http_req_duration{endpoint:braintree-payment,load:150}": ["p(75)<750"],
+    "http_req_duration{endpoint:braintree-payment,load:200}": ["p(75)<750"],
+    "http_req_duration{endpoint:braintree-payment,load:250}": ["p(75)<750"],
 
     "http_req_failed{endpoint:braintree-payment,load:10}": ["rate<0.01"],
     "http_req_failed{endpoint:braintree-payment,load:50}": ["rate<0.01"],
     "http_req_failed{endpoint:braintree-payment,load:100}": ["rate<0.01"],
     "http_req_failed{endpoint:braintree-payment,load:150}": ["rate<0.01"],
     "http_req_failed{endpoint:braintree-payment,load:200}": ["rate<0.01"],
+    "http_req_failed{endpoint:braintree-payment,load:250}": ["rate<0.01"],
 
     "http_reqs{endpoint:braintree-payment,load:10}": ["count>=0"],
     "http_reqs{endpoint:braintree-payment,load:50}": ["count>=0"],
     "http_reqs{endpoint:braintree-payment,load:100}": ["count>=0"],
     "http_reqs{endpoint:braintree-payment,load:150}": ["count>=0"],
     "http_reqs{endpoint:braintree-payment,load:200}": ["count>=0"],
+    "http_reqs{endpoint:braintree-payment,load:250}": ["count>=0"],
   },
 };
 
@@ -134,7 +163,7 @@ export function paymentTest() {
 }
 
 export function handleSummary(data) {
-  const loads = ["10", "50", "100", "150", "200"];
+  const loads = ["10", "50", "100", "150", "200", "250"];
 
   let customTable = "\n=========================================================================\n";
   customTable += " VU Load |    RPS    | p75 Response Time | Error Rate |   Endpoints   \n";

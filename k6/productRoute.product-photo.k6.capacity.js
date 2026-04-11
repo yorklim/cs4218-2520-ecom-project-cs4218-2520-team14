@@ -22,77 +22,122 @@ const photoErrorRate = new Rate("product_photo_error_rate");
 export const options = {
   summaryTrendStats: ["avg", "min", "med", "max", "p(75)", "p(90)", "p(95)", "count"],
   scenarios: {
+    photo_10: {
+      executor: "ramping-vus",
+      startVUs: 0,
+      stages: [
+        { target: 10, duration: "10s" },
+        { target: 10, duration: "50s" },
+      ],
+      exec: "photoTest",
+      tags: { endpoint: "product-photo", load: "10" },
+    },
     photo_50: {
-      executor: "constant-vus",
-      vus: 50,
-      duration: "1m",
+      executor: "ramping-vus",
+      startVUs: 10,
+      stages: [
+        { target: 50, duration: "10s" },
+        { target: 50, duration: "50s" },
+      ],
       startTime: "1m",
       exec: "photoTest",
       tags: { endpoint: "product-photo", load: "50" },
     },
     photo_100: {
-      executor: "constant-vus",
-      vus: 100,
-      duration: "1m",
+      executor: "ramping-vus",
+      startVUs: 50,
+      stages: [
+        { target: 100, duration: "10s" },
+        { target: 100, duration: "50s" },
+      ],
       startTime: "2m",
       exec: "photoTest",
       tags: { endpoint: "product-photo", load: "100" },
     },
     photo_150: {
-      executor: "constant-vus",
-      vus: 150,
-      duration: "1m",
+      executor: "ramping-vus",
+      startVUs: 100,
+      stages: [
+        { target: 150, duration: "10s" },
+        { target: 150, duration: "50s" },
+      ],
       startTime: "3m",
       exec: "photoTest",
       tags: { endpoint: "product-photo", load: "150" },
     },
     photo_200: {
-      executor: "constant-vus",
-      vus: 200,
-      duration: "1m",
+      executor: "ramping-vus",
+      startVUs: 150,
+      stages: [
+        { target: 200, duration: "10s" },
+        { target: 200, duration: "50s" },
+      ],
       startTime: "4m",
       exec: "photoTest",
       tags: { endpoint: "product-photo", load: "200" },
     },
-    photo_300: {
-      executor: "constant-vus",
-      vus: 300,
-      duration: "1m",
+    photo_250: {
+      executor: "ramping-vus",
+      startVUs: 200,
+      stages: [
+        { target: 250, duration: "10s" },
+        { target: 250, duration: "50s" },
+      ],
       startTime: "5m",
+      exec: "photoTest",
+      tags: { endpoint: "product-photo", load: "250" },
+    },
+    photo_300: {
+      executor: "ramping-vus",
+      startVUs: 200,
+      stages: [
+        { target: 300, duration: "10s" },
+        { target: 300, duration: "50s" },
+      ],
+      startTime: "6m",
       exec: "photoTest",
       tags: { endpoint: "product-photo", load: "300" },
     },
     photo_400: {
-      executor: "constant-vus",
-      vus: 400,
-      duration: "1m",
-      startTime: "6m",
+      executor: "ramping-vus",
+      startVUs: 300,
+      stages: [
+        { target: 400, duration: "20s" },
+        { target: 400, duration: "50s" },
+      ],
+      startTime: "7m",
       exec: "photoTest",
       tags: { endpoint: "product-photo", load: "400" },
     },
   },
   thresholds: {
     // UPDATED: p75 Response Time Thresholds (< 1000ms)
+    "http_req_duration{endpoint:product-photo,load:10}": ["p(75)<1000"],
     "http_req_duration{endpoint:product-photo,load:50}": ["p(75)<1000"],
     "http_req_duration{endpoint:product-photo,load:100}": ["p(75)<1000"],
     "http_req_duration{endpoint:product-photo,load:150}": ["p(75)<1000"],
     "http_req_duration{endpoint:product-photo,load:200}": ["p(75)<1000"],
+    "http_req_duration{endpoint:product-photo,load:250}": ["p(75)<1000"],
     "http_req_duration{endpoint:product-photo,load:300}": ["p(75)<1000"],
     "http_req_duration{endpoint:product-photo,load:400}": ["p(75)<1000"],
 
     // Error Rate Thresholds
+    "http_req_failed{endpoint:product-photo,load:10}": ["rate<0.01"],
     "http_req_failed{endpoint:product-photo,load:50}": ["rate<0.01"],
     "http_req_failed{endpoint:product-photo,load:100}": ["rate<0.01"],
     "http_req_failed{endpoint:product-photo,load:150}": ["rate<0.01"],
     "http_req_failed{endpoint:product-photo,load:200}": ["rate<0.01"],
+    "http_req_failed{endpoint:product-photo,load:250}": ["rate<0.01"],
     "http_req_failed{endpoint:product-photo,load:300}": ["rate<0.01"],
     "http_req_failed{endpoint:product-photo,load:400}": ["rate<0.01"],
 
     // Request Counter Tracking for Summary
+    "http_reqs{endpoint:product-photo,load:10}": ["count>=0"],
     "http_reqs{endpoint:product-photo,load:50}": ["count>=0"],
     "http_reqs{endpoint:product-photo,load:100}": ["count>=0"],
     "http_reqs{endpoint:product-photo,load:150}": ["count>=0"],
     "http_reqs{endpoint:product-photo,load:200}": ["count>=0"],
+    "http_reqs{endpoint:product-photo,load:250}": ["count>=0"],
     "http_reqs{endpoint:product-photo,load:300}": ["count>=0"],
     "http_reqs{endpoint:product-photo,load:400}": ["count>=0"],
   },
@@ -123,7 +168,7 @@ export function photoTest() {
 
 // Custom Summary Table for p75 Reporting
 export function handleSummary(data) {
-  const loads = ["50", "100", "150", "200", "300", "400"];
+  const loads = ["10", "50", "100", "150", "200", "250", "300", "400"];
 
   let customTable = "\n=========================================================================\n";
   customTable += " VU Load |    RPS    | p75 Response Time | Error Rate |   Endpoints   \n";

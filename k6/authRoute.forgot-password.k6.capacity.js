@@ -21,43 +21,69 @@ export const options = {
   summaryTrendStats: ["avg", "min", "med", "max", "p(75)", "p(90)", "p(95)", "count"],
   scenarios: {
     forgot_password_10: {
-      executor: "constant-vus",
-      vus: 10,
-      duration: "1m",
+      executor: "ramping-vus",
+      startVUs: 0,
+      stages: [
+        { target: 10, duration: "10s" },
+        { target: 10, duration: "50s" },
+      ],
       exec: "forgotPasswordTest",
       tags: { endpoint: "forgot-password", load: "10" },
     },
     forgot_password_50: {
-      executor: "constant-vus",
-      vus: 50,
-      duration: "1m",
+      executor: "ramping-vus",
+      startVUs: 10,
       startTime: "1m",
+      stages: [
+        { target: 50, duration: "10s" },
+        { target: 50, duration: "50s" },
+      ],
       exec: "forgotPasswordTest",
       tags: { endpoint: "forgot-password", load: "50" },
     },
     forgot_password_100: {
-      executor: "constant-vus",
-      vus: 100,
-      duration: "1m",
+      executor: "ramping-vus",
+      startVUs: 50,
       startTime: "2m",
+      stages: [
+        { target: 100, duration: "10s" },
+        { target: 100, duration: "50s" },
+      ],
       exec: "forgotPasswordTest",
       tags: { endpoint: "forgot-password", load: "100" },
     },
     forgot_password_150: {
-      executor: "constant-vus",
-      vus: 150,
-      duration: "1m",
+      executor: "ramping-vus",
+      startVUs: 100,
       startTime: "3m",
+      stages: [
+        { target: 150, duration: "10s" },
+        { target: 150, duration: "50s" },
+      ],
       exec: "forgotPasswordTest",
       tags: { endpoint: "forgot-password", load: "150" },
     },
     forgot_password_200: {
-      executor: "constant-vus",
-      vus: 200,
-      duration: "1m",
+      executor: "ramping-vus",
+      startVUs: 150,
       startTime: "4m",
+      stages: [
+        { target: 200, duration: "10s" },
+        { target: 200, duration: "50s" },
+      ],
       exec: "forgotPasswordTest",
       tags: { endpoint: "forgot-password", load: "200" },
+    },
+    forgot_password_250: {
+      executor: "ramping-vus",
+      startVUs: 200,
+      startTime: "5m",
+      stages: [
+        { target: 250, duration: "10s" },
+        { target: 250, duration: "50s" },
+      ],
+      exec: "forgotPasswordTest",
+      tags: { endpoint: "forgot-password", load: "250" },
     },
   },
   thresholds: {
@@ -67,6 +93,7 @@ export const options = {
     "http_req_duration{endpoint:forgot-password,load:100}": ["p(75)<1000"],
     "http_req_duration{endpoint:forgot-password,load:150}": ["p(75)<1000"],
     "http_req_duration{endpoint:forgot-password,load:200}": ["p(75)<1000"],
+    "http_req_duration{endpoint:forgot-password,load:250}": ["p(75)<1000"],
 
     // Error Rate Thresholds per Load
     "http_req_failed{endpoint:forgot-password,load:10}": ["rate<0.01"],
@@ -74,6 +101,7 @@ export const options = {
     "http_req_failed{endpoint:forgot-password,load:100}": ["rate<0.01"],
     "http_req_failed{endpoint:forgot-password,load:150}": ["rate<0.01"],
     "http_req_failed{endpoint:forgot-password,load:200}": ["rate<0.01"],
+    "http_req_failed{endpoint:forgot-password,load:250}": ["rate<0.01"],
 
     // Counter Tracking (Essential for calculating RPS in handleSummary)
     "http_reqs{endpoint:forgot-password,load:10}": ["count>=0"],
@@ -81,6 +109,7 @@ export const options = {
     "http_reqs{endpoint:forgot-password,load:100}": ["count>=0"],
     "http_reqs{endpoint:forgot-password,load:150}": ["count>=0"],
     "http_reqs{endpoint:forgot-password,load:200}": ["count>=0"],
+    "http_reqs{endpoint:forgot-password,load:250}": ["count>=0"],
   },
 };
 
@@ -113,7 +142,7 @@ export function forgotPasswordTest() {
 
 // Generates the custom table and full summary
 export function handleSummary(data) {
-  const loads = ["10", "50", "100", "150", "200"];
+  const loads = ["10", "50", "100", "150", "200", "250"];
 
   let customTable = "\n=========================================================================\n";
   // UPDATED: Table Header changed to p75

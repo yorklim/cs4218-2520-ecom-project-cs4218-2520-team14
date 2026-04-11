@@ -21,43 +21,69 @@ export const options = {
   summaryTrendStats: ["avg", "min", "med", "max", "p(75)", "p(90)", "p(95)", "count"],
   scenarios: {
     orders_10: {
-      executor: "constant-vus",
-      vus: 10,
-      duration: "1m",
+      executor: "ramping-vus",
+      startVUs: 0,
+      stages: [
+        { target: 10, duration: "10s" },
+        { target: 10, duration: "50s" },
+      ],
       exec: "ordersTest",
       tags: { endpoint: "orders", load: "10" },
     },
     orders_50: {
-      executor: "constant-vus",
-      vus: 50,
-      duration: "1m",
+      executor: "ramping-vus",
+      startVUs: 10,
       startTime: "1m",
+      stages: [
+        { target: 50, duration: "10s" },
+        { target: 50, duration: "50s" },
+      ],
       exec: "ordersTest",
       tags: { endpoint: "orders", load: "50" },
     },
     orders_100: {
-      executor: "constant-vus",
-      vus: 100,
-      duration: "1m",
+      executor: "ramping-vus",
+      startVUs: 50,
       startTime: "2m",
+      stages: [
+        { target: 100, duration: "10s" },
+        { target: 100, duration: "50s" },
+      ],
       exec: "ordersTest",
       tags: { endpoint: "orders", load: "100" },
     },
     orders_150: {
-      executor: "constant-vus",
-      vus: 150,
-      duration: "1m",
+      executor: "ramping-vus",
+      startVUs: 100,
       startTime: "3m",
+      stages: [
+        { target: 150, duration: "10s" },
+        { target: 150, duration: "50s" },
+      ],
       exec: "ordersTest",
       tags: { endpoint: "orders", load: "150" },
     },
     orders_200: {
-      executor: "constant-vus",
-      vus: 200,
-      duration: "1m",
+      executor: "ramping-vus",
+      startVUs: 150,
       startTime: "4m",
+      stages: [
+        { target: 200, duration: "10s" },
+        { target: 200, duration: "50s" },
+      ],
       exec: "ordersTest",
       tags: { endpoint: "orders", load: "200" },
+    },
+    orders_250: {
+      executor: "ramping-vus",
+      startVUs: 200,
+      startTime: "5m",
+      stages: [
+        { target: 250, duration: "10s" },
+        { target: 250, duration: "50s" },
+      ],
+      exec: "ordersTest",
+      tags: { endpoint: "orders", load: "250" },
     },
   },
   thresholds: {
@@ -67,18 +93,21 @@ export const options = {
     "http_req_duration{endpoint:orders,load:100}": ["p(75)<1500"],
     "http_req_duration{endpoint:orders,load:150}": ["p(75)<1500"],
     "http_req_duration{endpoint:orders,load:200}": ["p(75)<1500"],
+    "http_req_duration{endpoint:orders,load:250}": ["p(75)<1500"],
 
     "http_req_failed{endpoint:orders,load:10}": ["rate<0.01"],
     "http_req_failed{endpoint:orders,load:50}": ["rate<0.01"],
     "http_req_failed{endpoint:orders,load:100}": ["rate<0.01"],
     "http_req_failed{endpoint:orders,load:150}": ["rate<0.01"],
     "http_req_failed{endpoint:orders,load:200}": ["rate<0.01"],
+    "http_req_failed{endpoint:orders,load:250}": ["rate<0.01"],
 
     "http_reqs{endpoint:orders,load:10}": ["count>=0"],
     "http_reqs{endpoint:orders,load:50}": ["count>=0"],
     "http_reqs{endpoint:orders,load:100}": ["count>=0"],
     "http_reqs{endpoint:orders,load:150}": ["count>=0"],
     "http_reqs{endpoint:orders,load:200}": ["count>=0"],
+    "http_reqs{endpoint:orders,load:250}": ["count>=0"],
   },
 };
 
@@ -120,7 +149,7 @@ export function ordersTest() {
 }
 
 export function handleSummary(data) {
-  const loads = ["10", "50", "100", "150", "200"];
+  const loads = ["10", "50", "100", "150", "200", "250"];
 
   let customTable = "\n=========================================================================\n";
   customTable += " VU Load |    RPS    | p75 Response Time | Error Rate |   Endpoints   \n";
