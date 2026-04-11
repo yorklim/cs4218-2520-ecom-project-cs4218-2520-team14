@@ -20,52 +20,79 @@ export const options = {
   summaryTrendStats: ["avg", "min", "med", "max", "p(75)", "p(90)", "p(95)", "count"],
   scenarios: {
     login_10: {
-      executor: "constant-vus",
-      vus: 10,
-      duration: "1m",
+      executor: "ramping-vus",
+      startVUs: 0,
+      stages: [
+        { target: 10, duration: "10s" },
+        { target: 10, duration: "50s" },
+      ],
       exec: "loginTest",
       tags: { endpoint: "login", load: "10" },
     },
     login_50: {
-      executor: "constant-vus",
-      vus: 50,
-      duration: "1m",
+      executor: "ramping-vus",
+      startVUs: 10,
       startTime: "1m",
+      stages: [
+        { target: 50, duration: "10s" },
+        { target: 50, duration: "50s" },
+      ],
       exec: "loginTest",
       tags: { endpoint: "login", load: "50" },
     },
     login_100: {
-      executor: "constant-vus",
-      vus: 100,
-      duration: "1m",
+      executor: "ramping-vus",
+      startVUs: 50,
       startTime: "2m",
+      stages: [
+        { target: 100, duration: "10s" },
+        { target: 100, duration: "50s" },
+      ],
       exec: "loginTest",
       tags: { endpoint: "login", load: "100" },
     },
     login_150: {
-      executor: "constant-vus",
-      vus: 150,
-      duration: "1m",
+      executor: "ramping-vus",
+      startVUs: 100,
       startTime: "3m",
+      stages: [
+        { target: 150, duration: "10s" },
+        { target: 150, duration: "50s" },
+      ],
       exec: "loginTest",
       tags: { endpoint: "login", load: "150" },
     },
     login_200: {
-      executor: "constant-vus",
-      vus: 200,
-      duration: "1m",
+      executor: "ramping-vus",
+      startVUs: 150,
       startTime: "4m",
+      stages: [
+        { target: 200, duration: "10s" },
+        { target: 200, duration: "50s" },
+      ],
       exec: "loginTest",
       tags: { endpoint: "login", load: "200" },
+    },
+    login_250: {
+      executor: "ramping-vus",
+      startVUs: 200,
+      startTime: "5m",
+      stages: [
+        { target: 250, duration: "10s" },
+        { target: 250, duration: "50s" },
+      ],
+      exec: "loginTest",
+      tags: { endpoint: "login", load: "250" },
     },
   },
   thresholds: {
     // p75 Response Time Thresholds (forces tracking per tag)
-    "http_req_duration{endpoint:login,load:10}": ["p(75)<1000"],
-    "http_req_duration{endpoint:login,load:50}": ["p(75)<1000"],
-    "http_req_duration{endpoint:login,load:100}": ["p(75)<1000"],
-    "http_req_duration{endpoint:login,load:150}": ["p(75)<1000"],
-    "http_req_duration{endpoint:login,load:200}": ["p(75)<1000"],
+    "http_req_duration{endpoint:login,load:10}": ["p(75)<500"],
+    "http_req_duration{endpoint:login,load:50}": ["p(75)<500"],
+    "http_req_duration{endpoint:login,load:100}": ["p(75)<500"],
+    "http_req_duration{endpoint:login,load:150}": ["p(75)<500"],
+    "http_req_duration{endpoint:login,load:200}": ["p(75)<500"],
+    "http_req_duration{endpoint:login,load:250}": ["p(75)<500"],
 
     // Error Rate Thresholds (forces tracking per tag)
     "http_req_failed{endpoint:login,load:10}": ["rate<0.01"],
@@ -73,6 +100,7 @@ export const options = {
     "http_req_failed{endpoint:login,load:100}": ["rate<0.01"],
     "http_req_failed{endpoint:login,load:150}": ["rate<0.01"],
     "http_req_failed{endpoint:login,load:200}": ["rate<0.01"],
+    "http_req_failed{endpoint:login,load:250}": ["rate<0.01"],
 
     // Request Count Thresholds (forces tracking to calculate RPS later)
     "http_reqs{endpoint:login,load:10}": ["count>=0"],
@@ -80,6 +108,7 @@ export const options = {
     "http_reqs{endpoint:login,load:100}": ["count>=0"],
     "http_reqs{endpoint:login,load:150}": ["count>=0"],
     "http_reqs{endpoint:login,load:200}": ["count>=0"],
+    "http_reqs{endpoint:login,load:250}": ["count>=0"],
   },
 };
 
@@ -111,7 +140,7 @@ export function loginTest() {
 
 // Generates a custom table at the end of the test run
 export function handleSummary(data) {
-  const loads = ["10", "50", "100", "150", "200"];
+  const loads = ["10", "50", "100", "150", "200", "250"];
 
   let customTable = "\n=========================================================\n";
   customTable += " VU Load |    RPS    | p75 Response Time | Error Rate \n";

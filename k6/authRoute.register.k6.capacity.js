@@ -14,43 +14,69 @@ export const options = {
   summaryTrendStats: ["avg", "min", "med", "max", "p(75)", "p(90)", "p(95)", "count"],
   scenarios: {
     register_10: {
-      executor: "constant-vus",
-      vus: 10,
-      duration: "1m",
+      executor: "ramping-vus",
+      startVUs: 0,
+      stages: [
+        { target: 10, duration: "10s" },
+        { target: 10, duration: "50s" },
+      ],
       exec: "registerTest",
       tags: { endpoint: "register", load: "10" },
     },
     register_50: {
-      executor: "constant-vus",
-      vus: 50,
-      duration: "1m",
+      executor: "ramping-vus",
+      startVUs: 10,
       startTime: "1m",
+      stages: [
+        { target: 50, duration: "10s" },
+        { target: 50, duration: "50s" },
+      ],
       exec: "registerTest",
       tags: { endpoint: "register", load: "50" },
     },
     register_100: {
-      executor: "constant-vus",
-      vus: 100,
-      duration: "1m",
+      executor: "ramping-vus",
+      startVUs: 50,
       startTime: "2m",
+      stages: [
+        { target: 100, duration: "10s" },
+        { target: 100, duration: "50s" },
+      ],
       exec: "registerTest",
       tags: { endpoint: "register", load: "100" },
     },
     register_150: {
-      executor: "constant-vus",
-      vus: 150,
-      duration: "1m",
+      executor: "ramping-vus",
+      startVUs: 100,
       startTime: "3m",
+      stages: [
+        { target: 150, duration: "10s" },
+        { target: 150, duration: "50s" },
+      ],
       exec: "registerTest",
       tags: { endpoint: "register", load: "150" },
     },
     register_200: {
-      executor: "constant-vus",
-      vus: 200,
-      duration: "1m",
+      executor: "ramping-vus",
+      startVUs: 150,
       startTime: "4m",
+      stages: [
+        { target: 200, duration: "10s" },
+        { target: 200, duration: "50s" },
+      ],
       exec: "registerTest",
       tags: { endpoint: "register", load: "200" },
+    },
+    register_250: {
+      executor: "ramping-vus",
+      startVUs: 200,
+      startTime: "5m",
+      stages: [
+        { target: 250, duration: "10s" },
+        { target: 250, duration: "50s" },
+      ],
+      exec: "registerTest",
+      tags: { endpoint: "register", load: "250" },
     },
   },
   thresholds: {
@@ -60,6 +86,7 @@ export const options = {
     "http_req_duration{endpoint:register,load:100}": ["p(75)<1000"],
     "http_req_duration{endpoint:register,load:150}": ["p(75)<1000"],
     "http_req_duration{endpoint:register,load:200}": ["p(75)<1000"],
+    "http_req_duration{endpoint:register,load:250}": ["p(75)<1000"],
 
     // Error Rate Thresholds
     "http_req_failed{endpoint:register,load:10}": ["rate<0.01"],
@@ -67,6 +94,7 @@ export const options = {
     "http_req_failed{endpoint:register,load:100}": ["rate<0.01"],
     "http_req_failed{endpoint:register,load:150}": ["rate<0.01"],
     "http_req_failed{endpoint:register,load:200}": ["rate<0.01"],
+    "http_req_failed{endpoint:register,load:250}": ["rate<0.01"],
 
     // Request Counters (Required for RPS calculation in handleSummary)
     "http_reqs{endpoint:register,load:10}": ["count>=0"],
@@ -74,6 +102,7 @@ export const options = {
     "http_reqs{endpoint:register,load:100}": ["count>=0"],
     "http_reqs{endpoint:register,load:150}": ["count>=0"],
     "http_reqs{endpoint:register,load:200}": ["count>=0"],
+    "http_reqs{endpoint:register,load:250}": ["count>=0"],
   },
 };
 
@@ -109,7 +138,7 @@ export function registerTest() {
 
 // Custom Summary Table aligned to p75 for D4.1 Reporting
 export function handleSummary(data) {
-  const loads = ["10", "50", "100", "150", "200"];
+  const loads = ["10", "50", "100", "150", "200", "250"];
 
   let customTable = "\n=========================================================================\n";
   customTable += " VU Load |    RPS    | p75 Response Time | Error Rate |   Endpoints   \n";

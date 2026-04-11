@@ -186,6 +186,7 @@ NFT Testing (Capacity)
   - /get-category
 - ProductRoute
   - /get-product/:slug
+  - /product-photo/:pid
   - /product-filter
   - /product-list/:page
   - /search/:keyword
